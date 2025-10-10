@@ -281,3 +281,41 @@ if (ship.image.complete && ship.image.naturalWidth !== 0) {
     console.log('Imagen de la nave ya cargada en caché');
     initGame();
 }
+// Añadir esta función al final de tu archivo game.js (o donde definas tus funciones)
+
+/**
+ * Mueve el jugador hacia arriba o abajo al ser llamada por un botón.
+ * @param {string} direction - 'up' para subir, 'down' para bajar.
+ */
+function movePlayer(direction) {
+    // **Importante:** Necesitas reemplazar 'player' y 'playerSpeed'
+    // con los nombres reales de tus variables del jugador y velocidad.
+    
+    // Ejemplo asumiendo que tienes variables 'player' (con una propiedad 'y') 
+    // y 'playerSpeed' o un valor fijo para el movimiento.
+    const speed = 5; // O el valor de velocidad que uses en tu juego.
+
+    if (direction === 'up') {
+        // Lógica para mover el jugador hacia arriba
+        // Esto podría ser: player.y -= speed;
+        console.log("Mover jugador hacia arriba con el botón");
+        // **Añade aquí tu código real de movimiento del jugador hacia arriba**
+        
+    } else if (direction === 'down') {
+        // Lógica para mover el jugador hacia abajo
+        // Esto podría ser: player.y += speed;
+        console.log("Mover jugador hacia abajo con el botón");
+        // **Añade aquí tu código real de movimiento del jugador hacia abajo**
+    }
+    
+    // Si tu juego usa un bucle de juego (game loop) para dibujar, 
+    // y la función de movimiento no lo actualiza, 
+    // puede que necesites forzar una actualización del dibujo aquí.
+}
+
+// Opcional: Si quieres desactivar los botones en el inicio
+// document.getElementById('up-button').disabled = true;
+// document.getElementById('down-button').disabled = true;
+
+// **Recordatorio:** Reemplaza los comentarios con la lógica exacta que 
+// usas para mover el jugador con las teclas 'ArrowUp' y 'ArrowDown'.
