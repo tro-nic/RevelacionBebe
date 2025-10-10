@@ -18,8 +18,9 @@
         }
         canvas {
             border: 2px solid #fff;
+            /* El fondo se maneja directamente desde el CSS del canvas */
             background-image: url('fondo-espacial.jpg');
-            background-size: cover;
+            background-size: cover; /* Asegura que la imagen cubra todo el canvas */
             background-repeat: no-repeat;
             background-position: center;
             filter: brightness(0.7);
@@ -30,8 +31,10 @@
             text-align: center;
             margin-top: 20px;
         }
+        /* Ajuste para el tamaño de las imágenes al final del juego */
         #end-screen img {
-            width: 150px;
+            width: 120px; /* Tamaño más pequeño para las imágenes */
+            height: auto; /* Mantiene la proporción */
             margin: 10px;
             cursor: pointer;
         }
@@ -65,13 +68,13 @@
             display: none; /* Hidden until game starts */
         }
         #controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: none; /* <<<<<< OCULTO POR DEFECTO */
-            gap: 10px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: none; /* OCULTO POR DEFECTO hasta que el juego inicia */
+            gap: 10px;
         }
         #controls button {
             padding: 15px 25px;
@@ -102,8 +105,7 @@
     </div>
     
     <h1 id="game-title">Evita los Asteroides</h1>
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
-    <div id="end-screen">
+    <canvas id="gameCanvas" width="400" height="600"></canvas>     <div id="end-screen">
         <h2>¡Has completado la misión!</h2>
         <p>¿Cual es el niño elegido? "toca la imagen"</p>
         <div id="jedi-choice">
