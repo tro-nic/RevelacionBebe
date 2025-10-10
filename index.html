@@ -64,37 +64,7 @@
         #game-title {
             display: none; /* Hidden until game starts */
         }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> 
-</head>
-<body>
-    <div id="start-screen">
-        <h1>El reto del Halcón Milenario</h1>
-        <p>¡Bienvenido,  al desafío de pilotar el Halcón Milenario!</p>
-        <p><strong>Manual de instrucciones:</strong></p>
-        <p>- <strong>Objetivo:</strong> Esquiva los asteroides.</p>
-        <p>- <strong>Controles:</strong> Mueve la nave para arriba y para abajo.</p>
-        <p>- <strong>Puntuación:</strong> Ganas puntos cada vez que un asteroide pase sin chocar. Llega a 25 puntos antes de que se acabe el tiempo (60 segundos).</p>
-        <p>- <strong>Fin del juego:</strong> Si chocas con un asteroide, se reinicia el juego. Si alcanzas 25 puntos, elige entre Niño o Niña tocando la imagen del elegido.</p>
-        <p>¡Que la Fuerza te acompañe!</p>
-        <button id="start-button">Iniciar la misión</button>
-    </div>
-    <h1 id="game-title">Evita los Asteroides</h1>
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
-    <div id="end-screen">
-        <h2>¡Has completado la misión!</h2>
-        <p>¿Cual es el niño elegido? "toca la imagen"</p>
-        <div id="jedi-choice">
-            <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
-            <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
-        </div>
-        <div id="controls">
-    <button id="up-button" onclick="movePlayer('up')">⬆️ Arriba</button>
-    <button id="down-button" onclick="movePlayer('down')">⬇️ Abajo</button>
-</div>
-
-<style>
-    #controls {
+         #controls {
         position: fixed;
         bottom: 20px;
         left: 50%;
@@ -111,8 +81,35 @@
         border-radius: 8px;
         background-color: #fff;
     }
-</style>
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> 
+</head>
+<body>
+    <div id="start-screen">
+        <h1>El reto del Halcón Milenario</h1>
+        <p>¡Bienvenido,  al desafío de pilotar el Halcón Milenario!</p>
+        <p><strong>Manual de instrucciones:</strong></p>
+        <p>- <strong>Objetivo:</strong> Esquiva los asteroides.</p>
+        <p>- <strong>Controles:</strong> Mueve la nave para arriba y para abajo.</p>
+        <p>- <strong>Puntuación:</strong> Ganas puntos cada vez que un asteroide pase sin chocar. Llega a 25 puntos antes de que se acabe el tiempo (60 segundos).</p>
+        <p>- <strong>Fin del juego:</strong> Si chocas con un asteroide, se reinicia el juego. Si alcanzas 25 puntos, elige entre Niño o Niña tocando la imagen del elegido.</p>
+        <p>¡Que la Fuerza te acompañe!</p>
+        <button id="start-button">Iniciar la misión</button>
     </div>
+      <div id="controls">
+    <button id="up-button" onclick="movePlayer('up')">⬆️ Arriba</button>
+    <button id="down-button" onclick="movePlayer('down')">⬇️ Abajo</button>
+</div>
+    <h1 id="game-title">Evita los Asteroides</h1>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <div id="end-screen">
+        <h2>¡Has completado la misión!</h2>
+        <p>¿Cual es el niño elegido? "toca la imagen"</p>
+        <div id="jedi-choice">
+            <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
+            <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
+        </div>
+</div>
     <script src="game.js"></script>
 </body>
 </html>
