@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El reto del Halcón Milenario</title>
     <style>
         body {
@@ -13,233 +13,82 @@
             align-items: center;
             flex-direction: column;
             height: 100vh;
-            width: 100vw;
             margin: 0;
-            padding: 0;
-            overflow: hidden;
             font-family: Arial, sans-serif;
-            touch-action: manipulation; /* Optimiza eventos táctiles */
-        }
-        #gameContainer {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
         canvas {
-            display: none; /* Oculto hasta que empieza */
-            width: 100%;
-            height: 80%; /* Deja espacio para UI */
-            max-width: 600px;
-            max-height: 800px;
             border: 2px solid #fff;
             background-image: url('fondo-espacial.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             filter: brightness(0.7);
-            touch-action: none; /* Evita zoom/scroll en canvas */
-            border-radius: 5px;
+            display: none; /* Hidden until game starts */
         }
         #end-screen {
             display: none;
             text-align: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
+            margin-top: 20px;
         }
         #end-screen img {
-            width: 120px;
+            width: 150px;
             margin: 10px;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-        #end-screen img:hover {
-            transform: scale(1.1);
         }
         #start-screen {
             text-align: center;
-            max-width: 90%;
+            max-width: 600px;
             padding: 20px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
         }
         #start-screen h1 {
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            margin-bottom: 15px;
+            font-size: 2.5em;
+            margin-bottom: 20px;
         }
         #start-screen p {
-            font-size: clamp(0.9rem, 3vw, 1rem);
-            margin: 8px 0;
+            font-size: 1.2em;
+            margin: 10px 0;
         }
         #start-button {
             background-color: #ffd700;
             color: #000;
             border: none;
-            padding: 12px 24px;
-            font-size: clamp(1rem, 4vw, 1.2rem);
+            padding: 15px 30px;
+            font-size: 1.5em;
             cursor: pointer;
             border-radius: 5px;
-            margin-top: 15px;
-            transition: background-color 0.2s;
+            margin-top: 20px;
         }
         #start-button:hover {
             background-color: #ffec80;
         }
         #game-title {
-            display: none;
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
-            position: absolute;
-            top: 10px;
-            text-align: center;
-        }
-        /* Media queries para móviles */
-        @media screen and (max-width: 768px) {
-            canvas {
-                height: 70%;
-                max-height: 600px;
-            }
-            #end-screen img {
-                width: 100px;
-            }
-            #start-screen {
-                max-width: 95%;
-                padding: 15px;
-            }
-        }
-        @media screen and (max-width: 480px) {
-            #end-screen img {
-                width: 80px;
-            }
-            #start-screen h1 {
-                font-size: 1.2rem;
-            }
-            #start-screen p {
-                font-size: 0.8rem;
-            }
-            #start-button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
+            display: none; /* Hidden until game starts */
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> 
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="start-screen">
-            <h1>El reto del Halcón Milenario</h1>
-            <p>¡Bienvenido al desafío de pilotar el Halcón Milenario!</p>
-            <p><strong>Manual de instrucciones:</strong></p>
-            <p>- <strong>Objetivo:</strong> Esquiva los asteroides.</p>
-            <p>- <strong>Controles:</strong> Mueve la nave arriba/abajo (toca o usa flechas).</p>
-            <p>- <strong>Puntuación:</strong> Ganas 1 punto por asteroide esquivado. Llega a 25 puntos en 60 segundos.</p>
-            <p>- <strong>Fin del juego:</strong> Si chocas, se reinicia. Si ganas, elige Niño o Niña.</p>
-            <p>¡Que la Fuerza te acompañe!</p>
-            <button id="start-button">Iniciar la misión</button>
-        </div>
-        <h1 id="game-title">Evita los Asteroides</h1>
-        <canvas id="gameCanvas"></canvas>
-        <div id="end-screen">
-            <h2>¡Has completado la misión!</h2>
-            <p>¿Cuál es el niño elegido? Toca la imagen</p>
-            <div id="jedi-choice">
-                <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
-                <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
-            </div>
+    <div id="start-screen">
+        <h1>El reto del Halcón Milenario</h1>
+        <p>¡Bienvenido,  al desafío de pilotar el Halcón Milenario!</p>
+        <p><strong>Manual de instrucciones:</strong></p>
+        <p>- <strong>Objetivo:</strong> Esquiva los asteroides.</p>
+        <p>- <strong>Controles:</strong> Mueve la nave para arriba y para abajo.</p>
+        <p>- <strong>Puntuación:</strong> Ganas puntos cada vez que un asteroide pase sin chocar. Llega a 25 puntos antes de que se acabe el tiempo (60 segundos).</p>
+        <p>- <strong>Fin del juego:</strong> Si chocas con un asteroide, se reinicia el juego. Si alcanzas 25 puntos, elige entre Niño o Niña tocando la imagen del elegido.</p>
+        <p>¡Que la Fuerza te acompañe!</p>
+        <button id="start-button">Iniciar la misión</button>
+    </div>
+    <h1 id="game-title">Evita los Asteroides</h1>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <div id="end-screen">
+        <h2>¡Has completado la misión!</h2>
+        <p>¿Cual es el niño elegido? "toca la imagen"</p>
+        <div id="jedi-choice">
+            <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
+            <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
         </div>
     </div>
-    <script>
-        // Script básico para manejar pantallas (mientras subes game.js)
-        const startScreen = document.getElementById('start-screen');
-        const gameTitle = document.getElementById('game-title');
-        const canvas = document.getElementById('gameCanvas');
-        const endScreen = document.getElementById('end-screen');
-        const startButton = document.getElementById('start-button');
-        const jediGirl = document.getElementById('jedi-girl');
-        const jediBoy = document.getElementById('jedi-boy');
-        const ctx = canvas.getContext('2d');
-
-        // Ajustar canvas al tamaño de la pantalla
-        function resizeCanvas() {
-            const container = document.getElementById('gameContainer');
-            canvas.width = Math.min(container.clientWidth, 600);
-            canvas.height = Math.min(canvas.offsetHeight, 800);
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // Iniciar juego
-        startButton.addEventListener('click', () => {
-            startScreen.style.display = 'none';
-            gameTitle.style.display = 'block';
-            canvas.style.display = 'block';
-            // Aquí inicia la lógica de game.js
-        });
-
-        // Selección final (Niño/Niña)
-        jediGirl.addEventListener('click', () => {
-            confetti({ particleCount: 100, spread: 70, colors: ['#FF69B4', '#FFC1CC'] }); // Rosa
-            alert('¡Es una NIÑA! 🎀');
-        });
-        jediGirl.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            confetti({ particleCount: 100, spread: 70, colors: ['#FF69B4', '#FFC1CC'] });
-            alert('¡Es una NIÑA! 🎀');
-        });
-        jediBoy.addEventListener('click', () => {
-            confetti({ particleCount: 100, spread: 70, colors: ['#00B7EB', '#87CEEB'] }); // Azul
-            alert('¡Es un NIÑO! 🎉');
-        });
-        jediBoy.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            confetti({ particleCount: 100, spread: 70, colors: ['#00B7EB', '#87CEEB'] });
-            alert('¡Es un NIÑO! 🎉');
-        });
-
-        // Ejemplo de game.js (reemplaza con tu lógica)
-        let score = 0;
-        let gameOver = false;
-        let playerY = canvas.height / 2;
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#FFD700';
-            ctx.fillRect(50, playerY - 25, 50, 50); // Nave
-            ctx.fillStyle = '#FFF';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Puntos: ${score}`, 20, 30);
-            if (!gameOver) requestAnimationFrame(draw);
-        }
-        draw();
-
-        // Controles táctiles/mouse (mueve nave)
-        function handleInput(e) {
-            e.preventDefault();
-            let y;
-            const rect = canvas.getBoundingClientRect();
-            if (e.type.startsWith('touch')) {
-                const touch = e.touches[0] || e.changedTouches[0];
-                y = touch.clientY - rect.top;
-            } else {
-                y = e.clientY - rect.top;
-            }
-            playerY = Math.max(0, Math.min(y, canvas.height));
-        }
-        canvas.addEventListener('mousemove', handleInput);
-        canvas.addEventListener('touchmove', handleInput, { passive: false });
-    </script>
     <script src="game.js"></script>
 </body>
 </html>
