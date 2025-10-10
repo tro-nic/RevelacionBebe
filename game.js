@@ -19,13 +19,13 @@ ship.image.src = 'assets/millennium-falcon.png';
 
 let asteroids = [];
 let score = 0;
-let gameIsOver = false;
+let gameIsOver = false; // Usamos solo gameIsOver, no gameOver
 let startTime;
 let puntaje = 25;
 let gameStarted = 0; // 0 = no iniciado, 1 = iniciado
 const TIME_LIMIT = 60;
 const SHIP_VERTICAL_SPEED = 4;
-const ASTEROID_SPAWN_RATE = 0.05; // Aumentado de 0.02 para pruebas
+const ASTEROID_SPAWN_RATE = 0.05; // Aumentado para más asteroides
 
 // Ajustar canvas y posición inicial de la nave
 function resizeCanvas() {
@@ -86,7 +86,13 @@ function drawScoreAndTime() {
     ctx.fillText(`Tiempo: ${timeLeft}`, 10, 50);
 
     if (timeLeft <= 0 && !gameIsOver) {
-        gameOver();
+        gameIsOver = true;
+        gameStarted = 0;
+        alert(`¡Tiempo agotado! Puntos: ${score}`);
+        startScreen.style.display = 'block';
+        canvas.style.display = 'none';
+        gameTitle.style.display = 'none';
+        console.log('Juego terminado (tiempo agotado).');
     }
 }
 
@@ -148,7 +154,7 @@ function updateAsteroids() {
 }
 
 function drawAsteroids() {
-    ctx.fillStyle = '#808080';
+    ctx.fillStyle = '#FFFFFF'; // Blanco para mejor visibilidad
     asteroids.forEach(asteroid => {
         ctx.beginPath();
         ctx.arc(asteroid.x + asteroid.width / 2, asteroid.y + asteroid.height / 2, asteroid.width / 2, 0, Math.PI * 2);
@@ -168,7 +174,13 @@ function checkCollision() {
             ship.y < asteroid.y + asteroid.height &&
             ship.y + ship.height > asteroid.y) {
             console.log('Colisión detectada en nave:', ship.x, ship.y, 'asteroide:', asteroid.x, asteroid.y);
-            gameOver();
+            gameIsOver = true;
+            gameStarted = 0;
+            alert(`¡Misión Fallida! Has chocado con un asteroide. Puntos: ${score}`);
+            startScreen.style.display = 'block';
+            canvas.style.display = 'none';
+            gameTitle.style.display = 'none';
+            console.log('Juego terminado (colisión).');
         }
     });
 }
@@ -184,17 +196,6 @@ function checkWinCondition() {
         triggerConfetti();
         console.log('Juego ganado. Confeti activado.');
     }
-}
-
-function gameOver() {
-    gameIsOver = true;
-    gameStarted = 0;
-    alert(`¡Misión Fallida! Has chocado con un asteroide. Puntos: ${score}`);
-    resetGame();
-    startScreen.style.display = 'block';
-    canvas.style.display = 'none';
-    gameTitle.style.display = 'none';
-    console.log('Juego terminado (colisión).');
 }
 
 function gameLoop() {
@@ -291,7 +292,7 @@ function triggerConfetti() {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#FFD700', '#FF69B4', '#00B7EB'] // Temático: dorado, rosa, azul
+        colors: ['#FFD700', '#FF69B4', '#00B7EB']
     });
     console.log('Confeti disparado.');
 }
