@@ -25,6 +25,7 @@ let puntaje = 25;
 let gameStarted = 0; // 0 = no iniciado, 1 = iniciado
 const TIME_LIMIT = 60;
 const SHIP_VERTICAL_SPEED = 4;
+const ASTEROID_SPAWN_RATE = 0.05; // Aumentado de 0.02 para pruebas
 
 // Ajustar canvas y posición inicial de la nave
 function resizeCanvas() {
@@ -32,6 +33,7 @@ function resizeCanvas() {
     canvas.width = Math.min(container.clientWidth, 600);
     canvas.height = Math.min(canvas.offsetHeight, 800);
     ship.y = canvas.height / 2; // Centrar nave al redimensionar
+    console.log(`Canvas redimensionado: ${canvas.width}x${canvas.height}`);
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
@@ -69,6 +71,8 @@ function resetGame() {
     gameIsOver = false;
     endScreen.style.display = 'none';
     startTime = Date.now();
+    // Crear un asteroide inicial para pruebas
+    createAsteroid();
     console.log('Juego reiniciado. Bandera gameStarted:', gameStarted);
 }
 
@@ -89,7 +93,7 @@ function drawScoreAndTime() {
 function drawShip() {
     if (ship.image.complete && ship.image.naturalWidth !== 0) {
         ctx.drawImage(ship.image, ship.x, ship.y, ship.width, ship.height);
-        console.log('Nave renderizada como imagen.');
+        console.log('Nave renderizada en:', ship.x, ship.y);
     } else {
         ctx.fillStyle = '#FFD700';
         ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
@@ -122,23 +126,23 @@ function createAsteroid() {
         speed: asteroidSpeed,
         passed: false
     });
-    console.log('Asteroide creado:', asteroids.length);
+    console.log('Asteroide creado en x:', canvas.width, 'y:', asteroidY, 'tamaño:', asteroidSize);
 }
 
 function updateAsteroids() {
     if (gameIsOver || gameStarted === 0) return;
     asteroids.forEach(asteroid => {
         asteroid.x -= asteroid.speed;
-
         if (!asteroid.passed && asteroid.x + asteroid.width < ship.x) {
             score++;
             asteroid.passed = true;
+            console.log('Asteroide pasado, puntuación:', score);
         }
     });
 
     asteroids = asteroids.filter(asteroid => asteroid.x + asteroid.width > 0);
 
-    if (Math.random() < 0.02) {
+    if (Math.random() < ASTEROID_SPAWN_RATE) {
         createAsteroid();
     }
 }
@@ -151,6 +155,9 @@ function drawAsteroids() {
         ctx.fill();
         ctx.closePath();
     });
+    if (asteroids.length > 0) {
+        console.log('Asteroides renderizados:', asteroids.length, 'Posiciones:', asteroids.map(a => `x:${a.x},y:${a.y}`));
+    }
 }
 
 function checkCollision() {
@@ -160,6 +167,7 @@ function checkCollision() {
             ship.x + ship.width > asteroid.x &&
             ship.y < asteroid.y + asteroid.height &&
             ship.y + ship.height > asteroid.y) {
+            console.log('Colisión detectada en nave:', ship.x, ship.y, 'asteroide:', asteroid.x, asteroid.y);
             gameOver();
         }
     });
@@ -264,7 +272,6 @@ canvas.addEventListener('touchend', () => {
     console.log('Toque soltado.');
 });
 
-// Botones virtuales para touch (opcional, descomentar si quieres botones en pantalla)
 canvas.addEventListener('touchmove', (e) => {
     if (gameIsOver || gameStarted === 0) return;
     e.preventDefault();
@@ -283,7 +290,8 @@ function triggerConfetti() {
     confetti({
         particleCount: 100,
         spread: 70,
-        origin: { y: 0.6 }
+        origin: { y: 0.6 },
+        colors: ['#FFD700', '#FF69B4', '#00B7EB'] // Temático: dorado, rosa, azul
     });
     console.log('Confeti disparado.');
 }
