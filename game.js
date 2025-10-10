@@ -15,28 +15,38 @@ let ship = {
     speedY: 0,
     image: new Image()
 };
-// Asegúrate de que 'millennium-falcon.png' esté en la misma carpeta
-ship.image.src = 'millennium-falcon.png'; 
+ship.image.src = 'millennium-falcon.png';
 
 let asteroids = [];
 let score = 0;
 let gameIsOver = false;
 let startTime;
 let puntaje = 25;
-let gameStarted = 0; // 0 = juego no iniciado, 1 = juego iniciado
+let gameStarted = 0; // Bandera de control: 0 = juego no iniciado, 1 = juego iniciado
 const TIME_LIMIT = 60;
-const SHIP_VERTICAL_SPEED = 4; // Velocidad de movimiento
+const SHIP_VERTICAL_SPEED = 4;
 
 function initGame() {
     if (!ctx) {
-        console.error('Error: No se pudo obtener el contexto del canvas.');
+        console.error('Error: No se pudo obtener el contexto del canvas. Verifica el elemento #gameCanvas.');
         return;
     }
+
+    jediGirl.src = "leia-caricatura.png";
+    jediBoy.src = "luke-caricatura.png";
+
+    jediGirl.onload = () => console.log('Imagen de Princesa Leia cargada');
+    jediBoy.onload = () => console.log('Imagen de Luke Skywalker cargada');
+    jediGirl.onerror = () => console.error('Error al cargar leia-caricatura.png. Verifica el nombre y la ruta del archivo.');
+    jediBoy.onerror = () => console.error('Error al cargar luke-caricatura.png. Verifica el nombre y la ruta del archivo.');
+
     resetGame();
+    console.log('Juego inicializado, esperando que se presione el botón de inicio.');
 }
 
 function startGame() {
-    gameStarted = 1;
+    console.log('Botón de inicio presionado, comenzando el juego.');
+    gameStarted = 1; // Activa la bandera
     resetGame();
     gameLoop();
 }
@@ -49,11 +59,8 @@ function resetGame() {
     gameIsOver = false;
     endScreen.style.display = 'none';
     startTime = Date.now();
+    console.log('Juego reiniciado. Bandera gameStarted:', gameStarted);
 }
-
-// ------------------------------------------
-// DIBUJO Y ACTUALIZACIÓN
-// ------------------------------------------
 
 function drawScoreAndTime() {
     const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
@@ -65,18 +72,18 @@ function drawScoreAndTime() {
     ctx.fillText(`Tiempo: ${timeLeft}`, 10, 50);
 
     if (timeLeft <= 0 && !gameIsOver) {
-        // Fin del juego por tiempo
-        gameOver(true); 
+        gameOver();
     }
 }
 
 function drawShip() {
     if (ship.image.complete && ship.image.naturalWidth !== 0) {
         ctx.drawImage(ship.image, ship.x, ship.y, ship.width, ship.height);
+        console.log('Nave renderizada como imagen.');
     } else {
-        // Dibujar un rectángulo si la imagen falla
         ctx.fillStyle = 'blue';
         ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
+        console.warn('Imagen de la nave no cargada, usando rectángulo azul.');
     }
 }
 
@@ -85,7 +92,6 @@ function updateShip() {
 
     ship.y += ship.speedY;
 
-    // Limites de la pantalla
     if (ship.y < 0) {
         ship.y = 0;
     }
@@ -97,7 +103,7 @@ function updateShip() {
 function createAsteroid() {
     const asteroidSize = Math.random() * 30 + 20;
     const asteroidY = Math.random() * (canvas.height - asteroidSize);
-    const asteroidSpeed = Math.random() * 1 + 0.5; 
+    const asteroidSpeed = Math.random() * 1 + 0.5; // Velocidad reducida
     asteroids.push({
         x: canvas.width,
         y: asteroidY,
@@ -106,6 +112,7 @@ function createAsteroid() {
         speed: asteroidSpeed,
         passed: false
     });
+    console.log('Asteroide creado:', asteroids.length);
 }
 
 function updateAsteroids() {
@@ -113,17 +120,14 @@ function updateAsteroids() {
     asteroids.forEach(asteroid => {
         asteroid.x -= asteroid.speed;
 
-        // Aumentar puntuación si el asteroide pasó
         if (!asteroid.passed && asteroid.x + asteroid.width < ship.x) {
             score++;
             asteroid.passed = true;
         }
     });
 
-    // Eliminar asteroides que salieron de la pantalla
     asteroids = asteroids.filter(asteroid => asteroid.x + asteroid.width > 0);
 
-    // Creación de nuevos asteroides
     if (Math.random() < 0.02) {
         createAsteroid();
     }
@@ -133,22 +137,23 @@ function drawAsteroids() {
     ctx.fillStyle = '#808080';
     asteroids.forEach(asteroid => {
         ctx.beginPath();
-        // Dibujar el asteroide como un círculo
         ctx.arc(asteroid.x + asteroid.width / 2, asteroid.y + asteroid.height / 2, asteroid.width / 2, 0, Math.PI * 2);
         ctx.fill();
         ctx.closePath();
     });
+    if (asteroids.length > 0) {
+        console.log('Asteroides renderizados:', asteroids.length);
+    }
 }
 
 function checkCollision() {
     if (gameIsOver || gameStarted === 0) return;
     asteroids.forEach(asteroid => {
-        // Lógica de colisión simple AABB (Axis-Aligned Bounding Box)
         if (ship.x < asteroid.x + asteroid.width &&
             ship.x + ship.width > asteroid.x &&
             ship.y < asteroid.y + asteroid.height &&
             ship.y + ship.height > asteroid.y) {
-            gameOver(false); // Fin del juego por colisión
+            gameOver();
         }
     });
 }
@@ -160,111 +165,77 @@ function checkWinCondition() {
         gameStarted = 0;
         endScreen.style.display = 'block';
         triggerConfetti();
+        console.log('Juego ganado. Confeti activado. Bandera gameStarted:', gameStarted);
     }
 }
 
-function gameOver(timeExpired) {
+function gameOver() {
     gameIsOver = true;
     gameStarted = 0;
-    
-    let message;
-    if (timeExpired) {
-        message = `¡Misión Fallida! Se acabó el tiempo. Puntos: ${score}`;
-    } else {
-        message = `¡Misión Fallida! Has chocado con un asteroide. Puntos: ${score}`;
-    }
-    
-    alert(message);
-    
-    // Reiniciar al estado inicial
-    resetGame(); 
+    alert(`¡Misión Fallida! Has chocado con un asteroide. Puntos: ${score}`);
+    resetGame();
     startScreen.style.display = 'block';
     gameCanvas.style.display = 'none';
     gameTitle.style.display = 'none';
+    console.log('Juego terminado (colisión). Bandera gameStarted:', gameStarted);
 }
 
 function gameLoop() {
     if (gameStarted === 0) {
+        console.log('gameLoop detenido: gameStarted es 0');
         return;
     }
-    // Limpiar el canvas. El fondo de estrellas es un estilo CSS persistente.
-    ctx.clearRect(0, 0, canvas.width, canvas.height); 
-    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     updateShip();
     updateAsteroids();
     checkCollision();
-    
     drawAsteroids();
     drawShip();
     drawScoreAndTime();
     checkWinCondition();
-    
+    console.log('gameLoop ejecutándose. Puntos:', score, 'Asteroides:', asteroids.length, 'Tiempo:', Math.floor((Date.now() - startTime) / 1000));
     requestAnimationFrame(gameLoop);
 }
 
-// ------------------------------------------
-// CONTROLES
-// ------------------------------------------
-
-function movePlayer(direction) {
-    if (gameIsOver || gameStarted === 0) return;
-
-    if (direction === 'up') {
-        ship.speedY = -SHIP_VERTICAL_SPEED;
-    } else if (direction === 'down') {
-        ship.speedY = SHIP_VERTICAL_SPEED;
-    }
-}
-
-function stopPlayer() {
-    if (gameIsOver || gameStarted === 0) return;
-    ship.speedY = 0;
-}
-
-// Eventos de TECLADO
 document.addEventListener('keydown', (e) => {
     if (gameIsOver || gameStarted === 0) return;
     if (e.key === 'ArrowUp' || e.key === 'w') {
         ship.speedY = -SHIP_VERTICAL_SPEED;
+        console.log('Tecla arriba presionada, moviendo nave.');
     } else if (e.key === 'ArrowDown' || e.key === 's') {
         ship.speedY = SHIP_VERTICAL_SPEED;
+        console.log('Tecla abajo presionada, moviendo nave.');
     }
 });
 
 document.addEventListener('keyup', (e) => {
     if (gameIsOver || gameStarted === 0) return;
-    // Detener el movimiento solo si la tecla soltada es la que estaba en uso
     if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'ArrowDown' || e.key === 's') {
         ship.speedY = 0;
+        console.log('Tecla soltada, deteniendo nave.');
     }
 });
 
-// Eventos de CLIC/TÁCTIL en el CANVAS (Toma el lugar de los botones)
 canvas.addEventListener('mousedown', (e) => {
     if (gameIsOver || gameStarted === 0) return;
     const clickY = e.clientY - canvas.getBoundingClientRect().top;
-    
-    // Si el clic es arriba del centro de la nave, sube.
     if (clickY < ship.y + ship.height / 2) {
         ship.speedY = -SHIP_VERTICAL_SPEED;
+        console.log('Clic arriba, moviendo nave.');
     } else {
-        // Si el clic es abajo del centro de la nave, baja.
         ship.speedY = SHIP_VERTICAL_SPEED;
+        console.log('Clic abajo, moviendo nave.');
     }
 });
 
-canvas.addEventListener('mouseup', stopPlayer);
-canvas.addEventListener('mouseleave', stopPlayer); // Detener si el mouse sale del canvas
-canvas.addEventListener('touchend', stopPlayer);
-canvas.addEventListener('touchcancel', stopPlayer);
-
-
-// ------------------------------------------
-// FINAL DEL JUEGO Y CORREO
-// ------------------------------------------
+canvas.addEventListener('mouseup', () => {
+    ship.speedY = 0;
+    console.log('Clic soltado, deteniendo nave.');
+});
 
 function triggerConfetti() {
     if (typeof confetti === 'undefined') {
+        console.error('Error: canvas-confetti no está cargado. Verifica la inclusión del script.');
         return;
     }
     confetti({
@@ -272,13 +243,7 @@ function triggerConfetti() {
         spread: 70,
         origin: { y: 0.6 }
     });
-}
-
-function enviarCorreo(jediElegido) {
-    const email = 'gimenezyamili@gmail.com';
-    const subject = `Elección de Jedi: ${jediElegido}`;
-    const body = `El jugador ha elegido a: ${jediElegido}. Puntuación final: ${score}`;
-    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    console.log('Confeti disparado.');
 }
 
 jediGirl.addEventListener('click', () => {
@@ -289,17 +254,30 @@ jediBoy.addEventListener('click', () => {
     enviarCorreo('Jedi -> niño');
 });
 
-// EVENTO PRINCIPAL DE INICIO
+function enviarCorreo(jediElegido) {
+    const email = 'gimenezyamili@gmail.com';
+    const subject = `Elección de Jedi: ${jediElegido}`;
+    const body = `El jugador ha elegido a: ${jediElegido}.`;
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 startButton.addEventListener('click', () => {
+    console.log('Botón de inicio clicado');
     startScreen.style.display = 'none';
     gameCanvas.style.display = 'block';
     gameTitle.style.display = 'block';
     startGame();
 });
 
-// Cargar la nave y empezar la inicialización
-ship.image.onload = initGame;
-ship.image.onerror = initGame;
+ship.image.onload = () => {
+    console.log('Imagen de la nave cargada correctamente');
+    initGame();
+};
+ship.image.onerror = () => {
+    console.error('Error al cargar millennium-falcon.png. Verifica el nombre y la ruta del archivo.');
+    initGame();
+};
 if (ship.image.complete && ship.image.naturalWidth !== 0) {
+    console.log('Imagen de la nave ya cargada en caché');
     initGame();
 }
