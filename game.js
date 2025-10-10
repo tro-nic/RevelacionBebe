@@ -7,7 +7,7 @@ const startButton = document.getElementById('start-button');
 const startScreen = document.getElementById('start-screen');
 const gameTitle = document.getElementById('game-title');
 // NUEVAS REFERENCIAS A LOS BOTONES
-const controlsDiv = document.getElementById('controls');
+const controlsDiv = document.getElementById('controls'); // Referencia al div contenedor
 const upButton = document.getElementById('up-button');
 const downButton = document.getElementById('down-button');
 
@@ -52,7 +52,7 @@ function startGame() {
     console.log('Botón de inicio presionado, comenzando el juego.');
     gameStarted = 1; // Activa la bandera
     resetGame();
-    // MOSTRAR CONTROLES
+    // MOSTRAR CONTROLES (se asume que controlsDiv está definido y oculto por CSS inicialmente)
     controlsDiv.style.display = 'flex';
     gameLoop();
 }
@@ -157,7 +157,7 @@ function checkCollision() {
     asteroids.forEach(asteroid => {
         if (ship.x < asteroid.x + asteroid.width &&
             ship.x + ship.width > asteroid.x &&
-            ship.y < asteroid.y + asteroid.height &&
+            ship.y < asteroid.y + ship.height && // CORREGIDO: Usar ship.height
             ship.y + ship.height > asteroid.y) {
             gameOver();
         }
