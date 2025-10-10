@@ -88,6 +88,30 @@
             <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
             <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
         </div>
+        <div id="controls">
+    <button id="up-button" onclick="movePlayer('up')">⬆️ Arriba</button>
+    <button id="down-button" onclick="movePlayer('down')">⬇️ Abajo</button>
+</div>
+
+<style>
+    #controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000; /* Asegura que estén encima de otros elementos */
+        display: flex;
+        gap: 10px;
+    }
+    #controls button {
+        padding: 15px 25px;
+        font-size: 18px;
+        cursor: pointer;
+        border: 2px solid #333;
+        border-radius: 8px;
+        background-color: #fff;
+    }
+</style>
     </div>
     <script src="game.js"></script>
 </body>
