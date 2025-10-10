@@ -8,6 +8,7 @@
         body {
             background-color: #000;
             color: #fff;
+            /* Estos 4 ya centran el contenido principal, lo mantenemos */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,23 +19,23 @@
         }
         canvas {
             border: 2px solid #fff;
-            /* El fondo se maneja directamente desde el CSS del canvas */
             background-image: url('fondo-espacial.jpg');
-            background-size: cover; /* Asegura que la imagen cubra todo el canvas */
+            background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             filter: brightness(0.7);
             display: none; /* Hidden until game starts */
+            /* AÑADIDO: Asegura que el canvas esté centrado en el flujo */
+            margin: 10px auto; 
         }
         #end-screen {
             display: none;
             text-align: center;
             margin-top: 20px;
         }
-        /* Ajuste para el tamaño de las imágenes al final del juego */
         #end-screen img {
-            width: 120px; /* Tamaño más pequeño para las imágenes */
-            height: auto; /* Mantiene la proporción */
+            width: 120px;
+            height: auto;
             margin: 10px;
             cursor: pointer;
         }
@@ -66,6 +67,8 @@
         }
         #game-title {
             display: none; /* Hidden until game starts */
+            /* AÑADIDO: Asegura que el título también se centre */
+            text-align: center; 
         }
         #controls {
             position: fixed;
@@ -105,7 +108,8 @@
     </div>
     
     <h1 id="game-title">Evita los Asteroides</h1>
-    <canvas id="gameCanvas" width="400" height="600"></canvas>     <div id="end-screen">
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <div id="end-screen">
         <h2>¡Has completado la misión!</h2>
         <p>¿Cual es el niño elegido? "toca la imagen"</p>
         <div id="jedi-choice">
