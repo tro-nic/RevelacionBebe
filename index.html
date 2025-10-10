@@ -1,122 +1,94 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El reto del Halcón Milenario</title>
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            /* Estos 4 ya centran el contenido principal, lo mantenemos */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        canvas {
-            border: 2px solid #fff;
-            background-image: url('fondo-espacial.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: brightness(0.7);
-            display: none; /* Hidden until game starts */
-            /* AÑADIDO: Asegura que el canvas esté centrado en el flujo */
-            margin: 10px auto; 
-        }
-        #end-screen {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-        #end-screen img {
-            width: 120px;
-            height: auto;
-            margin: 10px;
-            cursor: pointer;
-        }
-        #start-screen {
-            text-align: center;
-            max-width: 600px;
-            padding: 20px;
-        }
-        #start-screen h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        #start-screen p {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-        #start-button {
-            background-color: #ffd700;
-            color: #000;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.5em;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        #start-button:hover {
-            background-color: #ffec80;
-        }
-        #game-title {
-            display: none; /* Hidden until game starts */
-            /* AÑADIDO: Asegura que el título también se centre */
-            text-align: center; 
-        }
-        #controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: none; /* OCULTO POR DEFECTO hasta que el juego inicia */
-            gap: 10px;
-        }
-        #controls button {
-            padding: 15px 25px;
-            font-size: 18px;
-            cursor: pointer;
-            border: 2px solid #333;
-            border-radius: 8px;
-            background-color: #fff;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El reto del Halcón Milenario</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid #fff;
+            background-image: url('fondo-espacial.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: brightness(0.7);
+            display: none; /* Hidden until game starts */
+        }
+        #end-screen {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #end-screen img {
+            width: 150px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #start-screen {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+        }
+        #start-screen h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        #start-screen p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        #start-button {
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        #start-button:hover {
+            background-color: #ffec80;
+        }
+        #game-title {
+            display: none; /* Hidden until game starts */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> 
 </head>
 <body>
-    <div id="start-screen">
-        <h1>El reto del Halcón Milenario</h1>
-        <p>¡Bienvenido,  al desafío de pilotar el Halcón Milenario!</p>
-        <p><strong>Manual de instrucciones:</strong></p>
-        <p>- <strong>Objetivo:</strong> Esquiva los asteroides.</p>
-        <p>- <strong>Controles:</strong> Mueve la nave para arriba y para abajo.</p>
-        <p>- <strong>Puntuación:</strong> Ganas puntos cada vez que un asteroide pase sin chocar. Llega a 25 puntos antes de que se acabe el tiempo (60 segundos).</p>
-        <p>- <strong>Fin del juego:</strong> Si chocas con un asteroide, se reinicia el juego. Si alcanzas 25 puntos, elige entre Niño o Niña tocando la imagen del elegido.</p>
-        <p>¡Que la Fuerza te acompañe!</p>
-        <button id="start-button">Iniciar la misión</button>
-    </div>
-        <div id="controls">
-        <button id="up-button">⬆️ Arriba</button>
-        <button id="down-button">⬇️ Abajo</button>
-    </div>
-    
-    <h1 id="game-title">Evita los Asteroides</h1>
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
-    <div id="end-screen">
-        <h2>¡Has completado la misión!</h2>
-        <p>¿Cual es el niño elegido? "toca la imagen"</p>
-        <div id="jedi-choice">
-            <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
-            <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
-        </div>
+    <div id="start-screen">
+        <h1>El reto del Halcón Milenario</h1>
+        <p>¡Bienvenido, joven Jedi, al desafío de pilotar el Halcón Milenario!</p>
+        <p><strong>Manual de instrucciones:</strong></p>
+        <p>- <strong>Objetivo:</strong> Esquiva los asteroides.</p>
+        <p>- <strong>Controles:</strong> Mueve la nave para arriba y para abajo.</p>
+        <p>- <strong>Puntuación:</strong> Ganas puntos cada vez que un asteroide pase sin chocar. Llega a 25 puntos antes de que se acabe el tiempo (60 segundos).</p>
+        <p>- <strong>Fin del juego:</strong> Si chocas con un asteroide, se reinicia el juego. Si alcanzas 25 puntos, elige entre Niño o Niña tocando la imagen del elegido.</p>
+        <p>¡Que la Fuerza te acompañe!</p>
+        <button id="start-button">Iniciar la misión</button>
     </div>
-    <script src="game.js"></script>
+    <h1 id="game-title">Evita los Asteroides</h1>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <div id="end-screen">
+        <h2>¡Has completado la misión!</h2>
+        <p>¿Cual es el niño elegido?</p>
+        <div id="jedi-choice">
+            <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
+            <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
+        </div>
+    </div>
+    <script src="game.js"></script>
 </body>
 </html>
