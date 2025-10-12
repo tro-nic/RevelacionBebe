@@ -13,6 +13,7 @@ let ship = {
     width: 60,
     height: 50,
     speedY: 0,
+    speedX: 0, // Nueva variable para movimiento horizontal
     image: new Image()
 };
 ship.image.src = 'millennium-falcon.png';
@@ -25,6 +26,7 @@ let puntaje = 25;
 let gameStarted = 0; // Bandera de control: 0 = juego no iniciado, 1 = juego iniciado
 const TIME_LIMIT = 60;
 const SHIP_VERTICAL_SPEED = 4;
+const SHIP_HORIZONTAL_SPEED = 4; // Velocidad para movimiento adelante/atrás
 
 function initGame() {
     if (!ctx) {
@@ -37,8 +39,8 @@ function initGame() {
 
     jediGirl.onload = () => console.log('Imagen de Princesa Leia cargada');
     jediBoy.onload = () => console.log('Imagen de Luke Skywalker cargada');
-    jediGirl.onerror = () => console.error('Error al cargar leia-caricatura.png. Verifica el nombre y la ruta del archivo.');
-    jediBoy.onerror = () => console.error('Error al cargar luke-caricatura.png. Verifica el nombre y la ruta del archivo.');
+    jediGirl.onerror = () => console.error('Error al cargar leia-caricatura.png');
+    jediBoy.onerror = () => console.error('Error al cargar luke-caricatura.png');
 
     resetGame();
     console.log('Juego inicializado, esperando que se presione el botón de inicio.');
@@ -46,14 +48,16 @@ function initGame() {
 
 function startGame() {
     console.log('Botón de inicio presionado, comenzando el juego.');
-    gameStarted = 1; // Activa la bandera
+    gameStarted = 1;
     resetGame();
     gameLoop();
 }
 
 function resetGame() {
+    ship.x = 50; // Resetear posición X
     ship.y = canvas.height / 2;
     ship.speedY = 0;
+    ship.speedX = 0; // Resetear velocidad X
     asteroids = [];
     score = 0;
     gameIsOver = false;
@@ -90,20 +94,23 @@ function drawShip() {
 function updateShip() {
     if (gameIsOver || gameStarted === 0) return;
 
+    // Actualizar posición en ambos ejes
     ship.y += ship.speedY;
+    ship.x += ship.speedX;
 
-    if (ship.y < 0) {
-        ship.y = 0;
-    }
-    if (ship.y + ship.height > canvas.height) {
-        ship.y = canvas.height - ship.height;
-    }
+    // Límites verticales
+    if (ship.y < 0) ship.y = 0;
+    if (ship.y + ship.height > canvas.height) ship.y = canvas.height - ship.height;
+
+    // Límites horizontales
+    if (ship.x < 0) ship.x = 0;
+    if (ship.x + ship.width > canvas.width) ship.x = canvas.width - ship.width;
 }
 
 function createAsteroid() {
     const asteroidSize = Math.random() * 30 + 20;
     const asteroidY = Math.random() * (canvas.height - asteroidSize);
-    const asteroidSpeed = Math.random() * 1 + 0.5; // Velocidad reducida
+    const asteroidSpeed = Math.random() * 1 + 0.5;
     asteroids.push({
         x: canvas.width,
         y: asteroidY,
@@ -197,68 +204,110 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// Evitar comportamiento predeterminado de la pantalla táctil (desplazamiento, zoom)
+// Evitar comportamiento predeterminado de la pantalla táctil
 function preventDefaultTouch() {
     document.addEventListener('touchstart', (e) => {
         if (gameStarted === 1 && e.target === canvas) {
-            e.preventDefault(); // Evita desplazamiento/zoom solo en el canvas durante el juego
+            e.preventDefault();
         }
     }, { passive: false });
 }
 
-// Control táctil para mover la nave
+// Control táctil para mover la nave (arriba/abajo y adelante/atrás)
 canvas.addEventListener('touchstart', (e) => {
     if (gameIsOver || gameStarted === 0) return;
-    e.preventDefault(); // Evita comportamiento predeterminado
+    e.preventDefault();
     const touchY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
-    if (touchY < ship.y + ship.height / 2) {
-        ship.speedY = -SHIP_VERTICAL_SPEED; // Mover hacia arriba
-        console.log('Toque arriba, moviendo nave.');
+    const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+
+    // Priorizar movimiento vertical si el toque está más cerca de la mitad superior/inferior
+    if (Math.abs(touchY - (ship.y + ship.height / 2)) > Math.abs(touchX - (ship.x + ship.width / 2))) {
+        if (touchY < ship.y + ship.height / 2) {
+            ship.speedY = -SHIP_VERTICAL_SPEED;
+            ship.speedX = 0;
+            console.log('Toque arriba, moviendo nave.');
+        } else {
+            ship.speedY = SHIP_VERTICAL_SPEED;
+            ship.speedX = 0;
+            console.log('Toque abajo, moviendo nave.');
+        }
     } else {
-        ship.speedY = SHIP_VERTICAL_SPEED; // Mover hacia abajo
-        console.log('Toque abajo, moviendo nave.');
+        // Movimiento horizontal si el toque está más cerca de la mitad izquierda/derecha
+        if (touchX < ship.x + ship.width / 2) {
+            ship.speedX = -SHIP_HORIZONTAL_SPEED;
+            ship.speedY = 0;
+            console.log('Toque izquierda, moviendo nave atrás.');
+        } else {
+            ship.speedX = SHIP_HORIZONTAL_SPEED;
+            ship.speedY = 0;
+            console.log('Toque derecha, moviendo nave adelante.');
+        }
     }
 });
 
 canvas.addEventListener('touchend', () => {
     if (gameIsOver || gameStarted === 0) return;
-    ship.speedY = 0; // Detener movimiento al soltar
+    ship.speedY = 0;
+    ship.speedX = 0;
     console.log('Toque soltado, deteniendo nave.');
 });
 
-// Restaurar control con ratón
+// Control con ratón (arriba/abajo y adelante/atrás)
 canvas.addEventListener('mousedown', (e) => {
     if (gameIsOver || gameStarted === 0) return;
     const clickY = e.clientY - canvas.getBoundingClientRect().top;
-    if (clickY < ship.y + ship.height / 2) {
-        ship.speedY = -SHIP_VERTICAL_SPEED; // Mover hacia arriba
-        console.log('Clic arriba, moviendo nave.');
+    const clickX = e.clientX - canvas.getBoundingClientRect().left;
+
+    // Priorizar movimiento vertical si el clic está más cerca de la mitad superior/inferior
+    if (Math.abs(clickY - (ship.y + ship.height / 2)) > Math.abs(clickX - (ship.x + ship.width / 2))) {
+        if (clickY < ship.y + ship.height / 2) {
+            ship.speedY = -SHIP_VERTICAL_SPEED;
+            ship.speedX = 0;
+            console.log('Clic arriba, moviendo nave.');
+        } else {
+            ship.speedY = SHIP_VERTICAL_SPEED;
+            ship.speedX = 0;
+            console.log('Clic abajo, moviendo nave.');
+        }
     } else {
-        ship.speedY = SHIP_VERTICAL_SPEED; // Mover hacia abajo
-        console.log('Clic abajo, moviendo nave.');
+        // Movimiento horizontal si el clic está más cerca de la mitad izquierda/derecha
+        if (clickX < ship.x + ship.width / 2) {
+            ship.speedX = -SHIP_HORIZONTAL_SPEED;
+            ship.speedY = 0;
+            console.log('Clic izquierda, moviendo nave atrás.');
+        } else {
+            ship.speedX = SHIP_HORIZONTAL_SPEED;
+            ship.speedY = 0;
+            console.log('Clic derecha, moviendo nave adelante.');
+        }
     }
 });
 
 canvas.addEventListener('mouseup', () => {
     if (gameIsOver || gameStarted === 0) return;
-    ship.speedY = 0; // Detener movimiento al soltar
+    ship.speedY = 0;
+    ship.speedX = 0;
     console.log('Clic soltado, deteniendo nave.');
 });
 
-// Opcional: Seguir el dedo directamente (comentar/descomentar según prefieras)
+// Opcional: Seguir el dedo directamente
 // canvas.addEventListener('touchmove', (e) => {
 //     if (gameIsOver || gameStarted === 0) return;
 //     e.preventDefault();
 //     const touchY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
-//     ship.y = touchY - ship.height / 2; // Centrar nave en la posición del dedo
+//     const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+//     ship.y = touchY - ship.height / 2;
+//     ship.x = touchX - ship.width / 2;
 //     if (ship.y < 0) ship.y = 0;
 //     if (ship.y + ship.height > canvas.height) ship.y = canvas.height - ship.height;
-//     console.log('Toque movido, actualizando posición de la nave:', ship.y);
+//     if (ship.x < 0) ship.x = 0;
+//     if (ship.x + ship.width > canvas.width) ship.x = canvas.width - ship.width;
+//     console.log('Toque movido, actualizando posición de la nave:', ship.x, ship.y);
 // });
 
 function triggerConfetti() {
     if (typeof confetti === 'undefined') {
-        console.error('Error: canvas-confetti no está cargado. Verifica la inclusión del script.');
+        console.error('Error: canvas-confetti no está cargado.');
         return;
     }
     confetti({
@@ -297,7 +346,7 @@ ship.image.onload = () => {
     initGame();
 };
 ship.image.onerror = () => {
-    console.error('Error al cargar millennium-falcon.png. Verifica el nombre y la ruta del archivo.');
+    console.error('Error al cargar millennium-falcon.png');
     initGame();
 };
 if (ship.image.complete && ship.image.naturalWidth !== 0) {
