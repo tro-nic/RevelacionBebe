@@ -191,23 +191,22 @@ function gameLoop() {
     checkCollision();
     drawAsteroids();
     drawShip();
-    preventDefaultTouch();
     drawScoreAndTime();
     checkWinCondition();
     console.log('gameLoop ejecutándose. Puntos:', score, 'Asteroides:', asteroids.length, 'Tiempo:', Math.floor((Date.now() - startTime) / 1000));
     requestAnimationFrame(gameLoop);
 }
 
-// Nuevo: Evitar comportamiento predeterminado de la pantalla táctil (desplazamiento, zoom)
+// Evitar comportamiento predeterminado de la pantalla táctil (desplazamiento, zoom)
 function preventDefaultTouch() {
     document.addEventListener('touchstart', (e) => {
-        if (gameStarted === 1) {
-            e.preventDefault(); // Evita desplazamiento/zoom en el juego
+        if (gameStarted === 1 && e.target === canvas) {
+            e.preventDefault(); // Evita desplazamiento/zoom solo en el canvas durante el juego
         }
     }, { passive: false });
 }
 
-// Nuevo: Control táctil para mover la nave
+// Control táctil para mover la nave
 canvas.addEventListener('touchstart', (e) => {
     if (gameIsOver || gameStarted === 0) return;
     e.preventDefault(); // Evita comportamiento predeterminado
@@ -225,6 +224,25 @@ canvas.addEventListener('touchend', () => {
     if (gameIsOver || gameStarted === 0) return;
     ship.speedY = 0; // Detener movimiento al soltar
     console.log('Toque soltado, deteniendo nave.');
+});
+
+// Restaurar control con ratón
+canvas.addEventListener('mousedown', (e) => {
+    if (gameIsOver || gameStarted === 0) return;
+    const clickY = e.clientY - canvas.getBoundingClientRect().top;
+    if (clickY < ship.y + ship.height / 2) {
+        ship.speedY = -SHIP_VERTICAL_SPEED; // Mover hacia arriba
+        console.log('Clic arriba, moviendo nave.');
+    } else {
+        ship.speedY = SHIP_VERTICAL_SPEED; // Mover hacia abajo
+        console.log('Clic abajo, moviendo nave.');
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    if (gameIsOver || gameStarted === 0) return;
+    ship.speedY = 0; // Detener movimiento al soltar
+    console.log('Clic soltado, deteniendo nave.');
 });
 
 // Opcional: Seguir el dedo directamente (comentar/descomentar según prefieras)
