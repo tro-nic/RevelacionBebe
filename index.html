@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El reto del Halcón Milenario</title>
     <style>
         body {
@@ -15,114 +15,69 @@
             min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            overflow-x: hidden;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 800px; /* Ancho máximo */
+            aspect-ratio: 2 / 3; /* Proporción original del juego */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         canvas {
+            width: 100%;
+            height: 100%;
             border: 2px solid #fff;
             background-image: url('fondo-espacial.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             filter: brightness(0.7);
-            display: none;
-            max-width: 100%;
-            max-height: 80vh;
-            width: 100%;
-            height: auto;
+            display: none; /* Oculto hasta que inicie el juego */
+        }
+        #game-title {
+            display: none; /* Oculto hasta que inicie el juego */
+            font-size: 2em;
+            margin-bottom: 10px;
         }
         #end-screen {
             display: none;
             text-align: center;
-            margin-top: 2vh;
-            width: 90%;
-            max-width: 600px;
+            margin-top: 20px;
         }
         #end-screen img {
-            width: 30vw;
-            max-width: 150px;
-            margin: 1.5vh;
+            width: 150px;
+            margin: 10px;
             cursor: pointer;
-            touch-action: manipulation;
         }
         #start-screen {
             text-align: center;
-            width: 90%;
             max-width: 600px;
-            padding: 2vh;
+            padding: 20px;
         }
         #start-screen h1 {
-            font-size: 6vw;
-            margin-bottom: 2vh;
+            font-size: 2.5em;
+            margin-bottom: 20px;
         }
         #start-screen p {
-            font-size: 3.5vw;
-            margin: 1vh 0;
+            font-size: 1.2em;
+            margin: 10px 0;
         }
         #start-button {
             background-color: #ffd700;
             color: #000;
             border: none;
-            padding: 2vh 4vw;
-            font-size: 4vw;
+            padding: 15px 30px;
+            font-size: 1.5em;
             cursor: pointer;
             border-radius: 5px;
-            margin-top: 2vh;
-            touch-action: manipulation;
+            margin-top: 20px;
         }
         #start-button:hover {
             background-color: #ffec80;
         }
-        #game-title {
-            display: none;
-            font-size: 5vw;
-            margin: 1vh 0;
-        }
-        #controls {
-            display: none;
-            position: fixed;
-            bottom: 2vh;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-        }
-        .control-button {
-            background-color: #ffd700;
-            color: #000;
-            border: none;
-            padding: 2vh 4vw;
-            margin: 0 1vw;
-            font-size: 4vw;
-            border-radius: 5px;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-        .control-button:active {
-            background-color: #ffec80;
-        }
-        @media (max-width: 600px) {
-            #start-screen h1 {
-                font-size: 8vw;
-            }
-            #start-screen p {
-                font-size: 4.5vw;
-            }
-            #start-button {
-                font-size: 5vw;
-                padding: 3vh 6vw;
-            }
-            #game-title {
-                font-size: 6vw;
-            }
-            #end-screen img {
-                width: 40vw;
-                max-width: 120px;
-            }
-            #controls {
-                display: flex;
-            }
-        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> 
 </head>
 <body>
     <div id="start-screen">
@@ -136,8 +91,10 @@
         <p>¡Que la Fuerza te acompañe!</p>
         <button id="start-button">Iniciar la misión</button>
     </div>
-    <h1 id="game-title">Evita los Asteroides</h1>
-    <canvas id="gameCanvas"></canvas>
+    <div id="game-container">
+        <h1 id="game-title">Evita los Asteroides</h1>
+        <canvas id="gameCanvas"></canvas>
+    </div>
     <div id="end-screen">
         <h2>¡Has completado la misión!</h2>
         <p>¿Cuál es el niño elegido?</p>
@@ -145,10 +102,6 @@
             <img id="jedi-girl" src="leia-caricatura.png" alt="Princesa Leia Caricatura">
             <img id="jedi-boy" src="luke-caricatura.png" alt="Luke Skywalker Caricatura">
         </div>
-    </div>
-    <div id="controls">
-        <button class="control-button" id="up-button">Arriba</button>
-        <button class="control-button" id="down-button">Abajo</button>
     </div>
     <script src="game.js"></script>
 </body>
