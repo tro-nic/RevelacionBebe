@@ -319,16 +319,16 @@ function triggerConfetti() {
 }
 
 jediGirl.addEventListener('click', () => {
-    enviarCorreo('Jedi -> niña');
+    enviarCorreo('Padawan -> niña');
 });
 
 jediBoy.addEventListener('click', () => {
-    enviarCorreo('Jedi -> niño');
+    enviarCorreo('Padawan -> niño');
 });
 
 function enviarCorreo(jediElegido) {
     const email = 'gimenezyamili@gmail.com';
-    const subject = `Elección de Jedi: ${jediElegido}`;
+    const subject = `Elección de Padawan: ${jediElegido}`;
     const body = `El jugador ha elegido a: ${jediElegido}.`;
     window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
